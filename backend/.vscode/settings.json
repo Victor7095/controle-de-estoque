@@ -1,0 +1,9 @@
+{
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "python.analysis.autoImportCompletions": true,
+  "autopep8.args": ["--indent-size=2"]
+}
