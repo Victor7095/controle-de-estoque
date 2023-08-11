@@ -10,6 +10,7 @@ import { CustomerService } from './demo/service/customer.service';
 import { EventService } from './demo/service/event.service';
 import { IconService } from './demo/service/icon.service';
 import { NodeService } from './demo/service/node.service';
+import { CategoryService } from './demo/service/category.service';
 
 @NgModule({
     declarations: [
@@ -22,7 +23,7 @@ import { NodeService } from './demo/service/node.service';
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CountryService, CustomerService, EventService, IconService, NodeService,
-        ProductService
+        ProductService, CategoryService
     ],
     bootstrap: [AppComponent]
 })
