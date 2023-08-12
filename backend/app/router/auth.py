@@ -6,19 +6,19 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
-from app.dependencies.jwt import authenticate_user, create_access_token, Token, get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.dependencies.jwt import authenticate_user, create_access_token, get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models.database import engine
 from app.models.user import User
-from app.schemas.auth import RegisterRequest, RegisterResponse
+from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest, RegisterResponse
 
 router = APIRouter()
 
 
-@router.post("/token", response_model=Token)
+@router.post("/token", response_model=LoginResponse)
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    user_data: LoginRequest
 ):
-  user = authenticate_user(engine, form_data.username, form_data.password)
+  user = authenticate_user(engine, user_data.username, user_data.password)
   if not user:
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
