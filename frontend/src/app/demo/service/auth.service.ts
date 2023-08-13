@@ -1,46 +1,59 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
+import { lastValueFrom, Subscription, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import jwtDecode from 'jwt-decode';
 
 @Injectable()
 export class AuthService {
-    constructor(private http: HttpClient) {}
+    tokenSubscription = new Subscription();
+
+    constructor(private http: HttpClient, private router: Router) {}
 
     async login(username: string, password: string) {
         const response = await lastValueFrom(
             this.http.post<any>('token', { username, password })
         );
-        this.setSession(response.data);
+        this.setSession(response);
     }
 
-    private setSession(authResult: { access_token: string; }) {
-      const decodedToken = jwtDecode<{ exp: number }>(authResult.access_token);
+    async register(username: string, password: string) {
+        const response = await lastValueFrom(
+            this.http.post<any>('register', { username, password })
+        );
+        this.setSession(response);
+    }
 
-      const today = new Date();
-      const expiresDelta = decodedToken.exp * 1000;
-      const expiresAt = new Date(today.getTime() + expiresDelta);
+    private setSession(authResult: { access_token: string }) {
+        const decodedToken = jwtDecode<{ exp: number }>(
+            authResult.access_token
+        );
 
-      localStorage.setItem('id_token', authResult.access_token);
-      localStorage.setItem("expires_at", JSON.stringify(expiresAt.valueOf()) );
-  }          
+        const expiresDelta = decodedToken.exp * 1000;
+        const expiresAt = new Date(expiresDelta);
 
-  logout() {
-      localStorage.removeItem("id_token");
-      localStorage.removeItem("expires_at");
-  }
+        localStorage.setItem('id_token', authResult.access_token);
+        localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
 
-  public isLoggedIn() {
-      return new Date().getTime() < this.getExpiration().getTime();
-  }
+        this.expirationCounter(expiresAt);
+    }
 
-  isLoggedOut() {
-      return !this.isLoggedIn();
-  }
+    expirationCounter(expiresAt: Date) {
+        this.tokenSubscription.unsubscribe();
+        this.tokenSubscription = of(null)
+            .pipe(delay(expiresAt))
+            .subscribe((expired) => {
+                console.log('EXPIRED!!');
 
-  getExpiration() {
-      const expiration = localStorage.getItem("expires_at");
-      const expiresAt = JSON.parse(expiration);
-      return new Date(expiresAt);
-  }    
+                this.logout();
+                this.router.navigate(['/auth/login']);
+            });
+    }
+
+    logout() {
+        this.tokenSubscription.unsubscribe();
+        localStorage.clear();
+        this.router.navigate(["/auth/login"]);
+    }
 }

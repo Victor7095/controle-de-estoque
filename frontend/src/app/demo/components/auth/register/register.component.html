@@ -6,7 +6,8 @@
             style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%);">
             <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius:53px">
                 <div class="text-center mb-5">
-                    <div class="text-900 text-3xl font-medium mb-3">Entre para continuar</div>
+                    <div class="text-900 text-3xl font-medium mb-3">Bem vindo(a)!</div>
+                    <span class="text-600 font-medium">Cadastre-se para continuar</span>
                 </div>
 
                 <form [formGroup]="form">
@@ -21,10 +22,9 @@
 
                     <div class="flex align-items-center justify-content-between mb-5 gap-5">
                         <a class="font-medium no-underline ml-2 text-right cursor-pointer"
-                            style="color: var(--primary-color)" [routerLink]="'/auth/register'">Não possui uma
-                            conta?</a>
+                            style="color: var(--primary-color)" [routerLink]="'/auth/login'">Já possui uma conta?</a>
                     </div>
-                    <button pButton pRipple label="Entrar" class="w-full p-3 text-xl" (click)="login()"></button>
+                    <button pButton pRipple label="Sign In" class="w-full p-3 text-xl" (click)="register()"></button>
                 </form>
             </div>
         </div>
