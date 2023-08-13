@@ -54,11 +54,13 @@ async def delete_single_category(id: int):
     return category
 
 
-@router.delete("/", response_model=list[Category])
+@router.post("/delete-multiple", response_model=list[Category])
 async def delete_multiple_categories(ids: list[int]):
   with Session(engine) as session:
-    statement = select(Category).where(Category.id in ids)
+    print(ids)
+    statement = select(Category).where(Category.id.in_(ids))
     categories = session.exec(statement).all()
-    session.delete(categories)
+    for category in categories:
+      session.delete(category)
     session.commit()
     return categories

@@ -33,21 +33,18 @@ export class CategoryComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.categoryService
-            .getCategories()
-            .then((data) => (this.categories = data));
+        this.categoryService.getCategories().then((data) => {
+            this.categories = data;
+        });
 
         this.cols = [
-            { field: 'category', header: 'Category' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' },
+            { field: 'id', header: 'Name' },
+            { field: 'name', header: 'name' },
         ];
     }
 
     openNew() {
-        this.category = {name: ''};
+        this.category = { name: '' };
         this.submitted = false;
         this.categoryDialog = true;
     }
@@ -67,31 +64,38 @@ export class CategoryComponent implements OnInit {
     }
 
     confirmDeleteSelected() {
-        this.deleteCategoriesDialog = false;
-        this.categories = this.categories.filter(
-            (val) => !this.selectedCategories.includes(val)
-        );
-        this.messageService.add({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Categories Deleted',
-            life: 3000,
-        });
-        this.selectedCategories = [];
+        this.categoryService
+            .deleteSelectedCategories(this.selectedCategories)
+            .then(() => {
+                this.deleteCategoriesDialog = false;
+                this.categories = this.categories.filter(
+                    (val) => !this.selectedCategories.includes(val)
+                );
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Categories Deleted',
+                    life: 3000,
+                });
+                this.selectedCategories = [];
+            });
     }
 
     confirmDelete() {
-        this.deleteCategoryDialog = false;
-        this.categories = this.categories.filter(
-            (val) => val.id !== this.category.id
-        );
-        this.messageService.add({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Category Deleted',
-            life: 3000,
+        this.categoryService.deleteSingleCategory(this.category).then(() => {
+            this.categories = this.categories.filter(
+                (val) => val.id !== this.category.id
+            );
+            this.category = { name: '' };
+            this.deleteCategoryDialog = false;
+
+            this.messageService.add({
+                severity: 'success',
+                summary: 'Successful',
+                detail: 'Category Deleted',
+                life: 3000,
+            });
         });
-        this.category = {name: ''};
     }
 
     hideDialog() {
@@ -99,33 +103,36 @@ export class CategoryComponent implements OnInit {
         this.submitted = false;
     }
 
-    saveCategory() {
+    async saveCategory() {
         this.submitted = true;
 
         if (this.category.name?.trim()) {
             if (this.category.id) {
-                this.categories[this.findIndexById(this.category.id)] =
-                    this.category;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Category Updated',
-                    life: 3000,
+                await this.categoryService.updateCategory(this.category).then(() => {
+                    this.categories[this.findIndexById(this.category.id)] =
+                        this.category;
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Categoria Atualizada',
+                        life: 3000,
+                    });
                 });
             } else {
-                this.category.id = this.createId();
-                this.categories.push(this.category);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Sucesso',
-                    detail: 'Categoria Criada',
-                    life: 3000,
+                await this.categoryService.createCategory(this.category).then((data) => {
+                    this.categories.push(data);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Sucesso',
+                        detail: 'Categoria Criada',
+                        life: 3000,
+                    });
                 });
             }
 
             this.categories = [...this.categories];
             this.categoryDialog = false;
-            this.category = {name: ''};
+            this.category = { name: '' };
         }
     }
 
@@ -139,16 +146,6 @@ export class CategoryComponent implements OnInit {
         }
 
         return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars =
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
     onGlobalFilter(table: Table, event: Event) {
