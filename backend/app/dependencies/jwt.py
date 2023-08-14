@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -61,7 +61,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
   return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(request: Request, token: Annotated[str, Depends(oauth2_scheme)]):
   credentials_exception = HTTPException(
       status_code=status.HTTP_401_UNAUTHORIZED,
       detail="Could not validate credentials",
@@ -78,6 +78,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
   user = get_user(engine, username=token_data.username)
   if user is None:
     raise credentials_exception
+  request.state.user = user
   return user
 
 

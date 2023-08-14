@@ -7,9 +7,12 @@ if TYPE_CHECKING:
   from app.models.product import Product
 
 
-class User(SQLModel, table=True):
-  id: Optional[int] = Field(default=None, primary_key=True)
+class UserBase(SQLModel):
   username: str
+
+
+class User(UserBase, table=True):
+  id: Optional[int] = Field(default=None, primary_key=True)
   password: str
 
   products: list["Product"] = Relationship(back_populates="seller")
