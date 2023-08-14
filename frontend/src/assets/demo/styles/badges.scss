@@ -10,20 +10,8 @@
 }
 
 .product-badge {
-    &.status-instock {
-        background: #C8E6C9;
-        color: #256029;
-    }
-
-    &.status-outofstock {
-        background: #FFCDD2;
-        color: #C63737;
-    }
-
-    &.status-lowstock {
-        background: #FEEDAF;
-        color: #8A5340;
-    }
+    background: #B3E5FC;
+    color: #23547B;
 }
 
 .customer-badge {

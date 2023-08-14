@@ -38,8 +38,8 @@ export class CategoryComponent implements OnInit {
         });
 
         this.cols = [
-            { field: 'id', header: 'Name' },
-            { field: 'name', header: 'name' },
+            { field: 'id', header: 'Código' },
+            { field: 'name', header: 'Nome' },
         ];
     }
 

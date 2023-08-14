@@ -1,16 +1,8 @@
-interface InventoryStatus {
-    label: string;
-    value: string;
-}
 export interface Product {
     id?: string;
-    code?: string;
     name?: string;
-    description?: string;
+    seller?: string;
     price?: number;
-    quantity?: number;
-    inventoryStatus?: InventoryStatus;
+    stockQuantity?: number;
     category?: string;
-    image?: string;
-    rating?: number;
 }
