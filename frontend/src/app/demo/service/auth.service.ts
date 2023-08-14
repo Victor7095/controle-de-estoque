@@ -9,43 +9,59 @@ import jwtDecode from 'jwt-decode';
 export class AuthService {
     tokenSubscription = new Subscription();
 
-    constructor(private http: HttpClient, private router: Router) {}
+    constructor(private http: HttpClient, private router: Router) {
+        const token = localStorage.getItem('id_token');
+        if (!token) {
+            router.navigate(['/auth/login']);
+            return;
+        }
+        const expiresAt = localStorage.getItem('expires_at');
+        if (!expiresAt) {
+            router.navigate(['/auth/login']);
+            return;
+        }
+        const expiresAtDate = new Date(JSON.parse(expiresAt));
+        if (new Date() > expiresAtDate) {
+            router.navigate(['/auth/login']);
+            return;
+        }
+        this.setSession(token);
+    }
 
     async login(username: string, password: string) {
         const response = await lastValueFrom(
             this.http.post<any>('token', { username, password })
         );
-        this.setSession(response);
+        this.setSession(response.access_token);
     }
 
     async register(username: string, password: string) {
         const response = await lastValueFrom(
             this.http.post<any>('register', { username, password })
         );
-        this.setSession(response);
+        this.setSession(response.access_token);
     }
 
-    private setSession(authResult: { access_token: string }) {
+    private setSession(access_token: string) {
         const decodedToken = jwtDecode<{ exp: number }>(
-            authResult.access_token
+            access_token
         );
 
         const expiresDelta = decodedToken.exp * 1000;
         const expiresAt = new Date(expiresDelta);
 
-        localStorage.setItem('id_token', authResult.access_token);
+        localStorage.setItem('id_token', access_token);
         localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
 
         this.expirationCounter(expiresAt);
     }
 
-    expirationCounter(expiresAt: Date) {
+    private expirationCounter(expiresAt: Date) {
         this.tokenSubscription.unsubscribe();
         this.tokenSubscription = of(null)
             .pipe(delay(expiresAt))
             .subscribe((expired) => {
                 console.log('EXPIRED!!');
-
                 this.logout();
                 this.router.navigate(['/auth/login']);
             });
