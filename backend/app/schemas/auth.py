@@ -17,5 +17,5 @@ class RegisterRequest(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-  id: int
-  username: str
+  access_token: str
+  token_type: str
