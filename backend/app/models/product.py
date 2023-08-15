@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -6,6 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel
 if TYPE_CHECKING:
   from app.models.category import Category
   from app.models.user import User
+  from app.models.sale import Sale
 
 
 class ProductBase(SQLModel):
@@ -25,3 +26,4 @@ class Product(ProductBase, table=True):
   seller: "User" = Relationship(back_populates="products")
   category_id: int = Field(foreign_key="category.id", alias="categoryId")
   category: "Category" = Relationship(back_populates="products")
+  sales: List["Sale"] = Relationship(back_populates="product")
