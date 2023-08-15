@@ -6,8 +6,11 @@ if TYPE_CHECKING:
   from app.models.product import Product
 
 
-class Category(SQLModel, table=True):
-  id: Optional[int] = Field(default=None, primary_key=True)
+class CategoryBase(SQLModel):
   name: str
+
+
+class Category(CategoryBase, table=True):
+  id: Optional[int] = Field(default=None, primary_key=True)
 
   products: List["Product"] = Relationship(back_populates="category")
