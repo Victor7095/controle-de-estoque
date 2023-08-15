@@ -47,7 +47,7 @@ export class ProductComponent implements OnInit {
             { field: 'id', header: 'Código' },
             { field: 'name', header: 'Nome' },
             { field: 'price', header: 'Preço' },
-            { field: 'stock_quantity', header: 'Quantidade' },
+            { field: 'stockQuantity', header: 'Quantidade' },
             { field: 'seller', header: 'Vendedor' },
             { field: 'category', header: 'Categoria' },
         ];
@@ -136,8 +136,8 @@ export class ProductComponent implements OnInit {
             } else {
                 await this.productService
                     .createProduct(this.product)
-                    .then(() => {
-                        this.products.push(this.product);
+                    .then((newProduct: Product) => {
+                        this.products.push(newProduct);
                         this.messageService.add({
                             severity: 'success',
                             summary: 'Successful',

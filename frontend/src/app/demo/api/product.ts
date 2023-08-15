@@ -1,8 +1,13 @@
+import { Category } from './category';
+import { User } from './user';
+
 export interface Product {
     id?: string;
     name?: string;
-    seller?: string;
+    sellerId?: number;
+    seller?: User;
     price?: number;
     stockQuantity?: number;
-    category?: string;
+    categoryId?: number;
+    category?: Category;
 }
