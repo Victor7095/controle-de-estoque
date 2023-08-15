@@ -1,34 +1,40 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
+
 from app.dependencies.database_session import get_session
 from app.models.category import Category
 from app.models.product import Product
 from app.models.sale import Sale
 
-from app.schemas.sales import SaleCreate, SaleRead
+from app.schemas.sales import Charts, SaleCreate, SaleRead
 
 router = APIRouter()
 
 
-@router.get("/charts")
+@router.get("/charts", response_model=Charts)
 async def charts(session: Session = Depends(get_session)):
-  last_four_sales = select(Sale).order_by(Sale.created_on.desc()).limit(4)
+  last_four_sales = select(Sale).options(
+      selectinload(Sale.bought_by)).options(
+      selectinload(Sale.product)).order_by(Sale.created_on.desc()).limit(4)
   last_four_sales = session.exec(last_four_sales).all()
 
   sales_count = func.count(Sale.id).label("sales_count")
 
-  sales_group_by_category = select([sales_count, Category.name]).select_from(Sale).join(Product).join(Category).group_by(
-      Category.name)
-  sales_group_by_category = session.exec(sales_group_by_category).all()
+  sales_grouped_by_category = select(
+      sales_count, Category.name.label("category_name")
+  ).select_from(Sale).join(Product).join(Category).group_by(Category.name)
+  sales_grouped_by_category = session.exec(sales_grouped_by_category).all()
 
-  ten_most_sold_products = select([sales_count, Product.name]).select_from(Sale).join(
-      Product).order_by(sales_count).limit(10)
+  ten_most_sold_products = select(
+      sales_count, Product.name.label("product_name")
+  ).select_from(Sale).join(Product).group_by(Product.name).order_by(sales_count.desc()).limit(10)
   ten_most_sold_products = session.exec(ten_most_sold_products).all()
 
   response = {
       "last_four_sales": last_four_sales,
-      "sales_group_by_category": sales_group_by_category,
+      "sales_grouped_by_category": sales_grouped_by_category,
       "ten_most_sold_products": ten_most_sold_products
   }
 
