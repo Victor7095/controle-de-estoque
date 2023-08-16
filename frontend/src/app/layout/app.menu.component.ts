@@ -18,7 +18,8 @@ export class AppMenuComponent implements OnInit {
                 label: 'Home',
                 items: [
                     { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-                    { label: 'Produtos', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/produtos'] },
+                    { label: 'Loja', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/loja'] },
+                    { label: 'Estoque', icon: 'pi pi-fw pi-box', routerLink: ['/produtos'] },
                     { label: 'Categorias', icon: 'pi pi-fw pi-tag', routerLink: ['/categorias'] }
                 ]
             },
@@ -39,11 +40,6 @@ export class AppMenuComponent implements OnInit {
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
                     {
-                        label: 'Landing',
-                        icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/landing']
-                    },
-                    {
                         label: 'Auth',
                         icon: 'pi pi-fw pi-user',
                         items: [
@@ -63,22 +59,7 @@ export class AppMenuComponent implements OnInit {
                                 routerLink: ['/auth/access']
                             }
                         ]
-                    },
-                    {
-                        label: 'Timeline',
-                        icon: 'pi pi-fw pi-calendar',
-                        routerLink: ['/pages/timeline']
-                    },
-                    {
-                        label: 'Not Found',
-                        icon: 'pi pi-fw pi-exclamation-circle',
-                        routerLink: ['/notfound']
-                    },
-                    {
-                        label: 'Empty',
-                        icon: 'pi pi-fw pi-circle-off',
-                        routerLink: ['/pages/empty']
-                    },
+                    }
                 ]
             },
             {
