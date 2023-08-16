@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 class SaleBase(SQLModel):
   product_id: int = Field(foreign_key="product.id", alias="productId")
   observation: Optional[str] = None
+  quantity: int
 
   class Config:
     allow_population_by_field_name = True
@@ -19,7 +20,8 @@ class SaleBase(SQLModel):
 
 class Sale(SaleBase, table=True):
   id: Optional[int] = Field(default=None, primary_key=True)
-  created_on: datetime = Field(default=datetime.now(), nullable=True)
+  created_on: datetime = Field(
+      default=datetime.utcnow, nullable=True, alias="createdOn")
 
   product: "Product" = Relationship(back_populates="sales")
 

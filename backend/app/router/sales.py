@@ -41,7 +41,7 @@ async def charts(session: Session = Depends(get_session)):
   return response
 
 
-@router.post("/", response_model=SaleRead)
+@router.post("/buy-product", response_model=SaleRead)
 async def buy_product(*, session: Session = Depends(get_session), sale: SaleCreate, request: Request):
   db_sale = Sale.from_orm(sale)
   db_sale.bought_by_id = request.state.user.id
