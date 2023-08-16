@@ -14,6 +14,7 @@ import { CategoryService } from './demo/service/category.service';
 import { AuthService } from './demo/service/auth.service';
 import { AuthInterceptor } from './demo/service/auth.interceptor';
 import { environment } from 'src/environments/environment';
+import { SalesService } from './demo/service/sales.service';
 
 @NgModule({
     declarations: [AppComponent, NotfoundComponent],
@@ -24,6 +25,7 @@ import { environment } from 'src/environments/environment';
         IconService,
         ProductService,
         CategoryService,
+        SalesService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

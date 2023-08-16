@@ -1,68 +1,67 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MenuItem } from 'primeng/api';
-import { Product } from '../../api/product';
-import { ProductService } from '../../service/product.service';
 import { Subscription } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import { SalesService } from '../../service/sales.service';
+import { Sale, SalesCharts } from '../../api/sales';
 
 @Component({
     templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-    items!: MenuItem[];
+    chartsData!: SalesCharts;
 
-    products!: Product[];
+    lastFourSales: Sale[];
 
     pieData: any;
-
     pieOptions: any;
 
     barData: any;
-
     barOptions: any;
 
     subscription!: Subscription;
 
     constructor(
-        private productService: ProductService,
+        private salesService: SalesService,
         public layoutService: LayoutService
     ) {
         this.subscription = this.layoutService.configUpdate$.subscribe(() => {
-            this.initChart();
         });
     }
 
     ngOnInit() {
-        this.initChart();
-        this.productService
-            .getProductsSmall()
-            .then((data) => (this.products = data));
-
-        this.items = [
-            { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-            { label: 'Remove', icon: 'pi pi-fw pi-minus' },
-        ];
+        this.salesService.getCharts().then((chartsData) => {
+            this.chartsData = chartsData;
+            this.lastFourSales = this.chartsData.lastFourSales;
+            this.initChart();
+        });
     }
 
-    initChart() {
+    extractSalesGroupedByCategory() {
+        const salesGroupedByCategory = this.chartsData.salesGroupedByCategory;
+        // Only first 3 and resr grouped as 'Others'
+        const labels = salesGroupedByCategory
+            .map((item) => item.categoryName)
+            .slice(0, 3);
+        const data = salesGroupedByCategory
+            .map((item) => item.salesCount)
+            .slice(0, 3);
+        labels.push('Outros');
+        data.push(
+            salesGroupedByCategory
+                .map((item) => item.salesCount)
+                .slice(3)
+                .reduce((a, b) => a + b, 0)
+        );
+
+        
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue('--text-color');
-        const textColorSecondary = documentStyle.getPropertyValue(
-            '--text-color-secondary'
-        );
-        const surfaceBorder =
-            documentStyle.getPropertyValue('--surface-border');
 
         this.pieData = {
-            labels: [
-                'Eletrônicos',
-                'Livros e Mídia',
-                'Casa e Decoração',
-                'Brinquedos e Jogos',
-            ],
+            labels,
             datasets: [
                 {
-                    data: [540, 325, 702, 444],
+                    data,
                     backgroundColor: [
                         documentStyle.getPropertyValue('--indigo-500'),
                         documentStyle.getPropertyValue('--purple-500'),
@@ -91,25 +90,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 },
             },
         };
+    }
 
-        const labels = [
-            'Galaxy A03',
-            'TV LG 32',
-            'Tablet Samsung Galaxy Tab',
-            'Fritadeira Easy Fry',
-            'Samsung Galaxy A14',
-            'Aquecedor Elétrico',
-            'Headset Gamer',
-            'Fone de Ouvido Bluetooth',
-            'Galaxy Book 2',
-            'Ar Condicionado Philco',
-        ]
+    extractTenMostSoldProducts() {
+        const documentStyle = getComputedStyle(document.documentElement);
+        const textColorSecondary = documentStyle.getPropertyValue(
+            '--text-color-secondary'
+        );
+
+        const tenMostSoldProducts = this.chartsData.tenMostSoldProducts;
+        const labels = tenMostSoldProducts.map((item) => item.productName);
+        const data = tenMostSoldProducts.map((item) => item.salesCount);
+
         this.barData = {
-            labels: labels,
+            labels,
             datasets: [
                 {
                     label: 'Quantidade',
-                    data: [100, 80, 70, 65, 50, 45, 40, 35, 30, 25],
+                    data,
                     backgroundColor: [
                         '#0982d1',
                         '#a40033',
@@ -161,6 +159,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 },
             },
         };
+    }
+
+    initChart() {
+        this.extractSalesGroupedByCategory();
+        this.extractTenMostSoldProducts();
     }
 
     ngOnDestroy() {

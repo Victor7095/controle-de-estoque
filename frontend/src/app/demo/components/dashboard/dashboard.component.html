@@ -2,7 +2,7 @@
     <div class="col-12 xl:col-6">
         <div class="card">
             <h5>Histórico de vendas</h5>
-            <p-table [value]="products" [paginator]="false" [rows]="4" responsiveLayout="scroll">
+            <p-table [value]="lastFourSales" [paginator]="false" [rows]="4" responsiveLayout="scroll">
                 <ng-template pTemplate="header">
                     <tr>
                         <th pSortableColumn="date">Data<p-sortIcon field="date"></p-sortIcon></th>
@@ -13,14 +13,14 @@
                         <th pSortableColumn="observation">Observação <p-sortIcon field="observation"></p-sortIcon></th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-product>
+                <ng-template pTemplate="body" let-sale>
                     <tr>
-                        <td style="width: 15%; min-width: 7rem;">{{product.date | date: 'dd/MM/yyyy'}}</td>
-                        <td style="width: 15%; min-width: 7rem;">{{product.date | date: 'hh:mm'}}</td>
-                        <td style="width: 15%; min-width: 7rem;">{{product.name}}</td>
-                        <td style="width: 15%; min-width: 7rem;">{{product.client}}</td>
-                        <td style="width: 17%; min-width: 7rem;">{{product.seller}}</td>
-                        <td style="width: 20%; min-width: 8rem;">{{product.observation || "-"}}</td>
+                        <td style="width: 15%; min-width: 7rem;">{{sale.createdOn | date: 'dd/MM/yyyy'}}</td>
+                        <td style="width: 15%; min-width: 7rem;">{{sale.createdOn | date: 'hh:mm'}}</td>
+                        <td style="width: 15%; min-width: 7rem;">{{sale.product.name}}</td>
+                        <td style="width: 15%; min-width: 7rem;">{{sale.boughtBy.username}}</td>
+                        <td style="width: 17%; min-width: 7rem;">{{sale.product.seller.username}}</td>
+                        <td style="width: 20%; min-width: 8rem;">{{sale.observation || "-"}}</td>
                     </tr>
                 </ng-template>
             </p-table>
