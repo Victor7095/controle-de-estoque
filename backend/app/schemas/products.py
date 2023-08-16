@@ -14,3 +14,7 @@ class ProductRead(ProductBase):
   seller_id: int = Field(alias="sellerId")
   category: CategoryBase
   seller: UserRead
+
+
+class ProductReadInStore(ProductBase):
+  id: int

@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from app.dependencies.database_session import get_session
 from app.models.product import Product
-from app.schemas.products import ProductCreate, ProductRead
+from app.schemas.products import ProductCreate, ProductRead, ProductReadInStore
 
 router = APIRouter()
 
@@ -14,6 +14,24 @@ async def get_products(session: Session = Depends(get_session)):
   statement = select(Product).options(
       selectinload(Product.category)).options(
       selectinload(Product.seller)).order_by(Product.id)
+  products = session.exec(statement).all()
+
+  return products
+
+
+@router.get("/in_store", response_model=list[ProductReadInStore])
+async def get_products_in_store(*,
+                                q: str | None = None,
+                                categoryId: int = 0,
+                                searchText: str = None,
+                                session: Session = Depends(get_session)):
+  statement = select(Product).where(
+      Product.stock_quantity > 0)
+  if categoryId != 0:
+    statement = statement.where(Product.category_id == categoryId)
+  if searchText:
+    statement = statement.where(Product.name.ilike(f"%{searchText}%"))
+  statement = statement.order_by(Product.id)
   products = session.exec(statement).all()
 
   return products
