@@ -9,6 +9,7 @@ from app.schemas.products import ProductCreate, ProductRead, ProductReadInStore
 router = APIRouter()
 
 
+@router.get("", response_model=list[ProductRead], include_in_schema=False)
 @router.get("/", response_model=list[ProductRead])
 async def get_products(session: Session = Depends(get_session)):
   statement = select(Product).options(
@@ -44,6 +45,7 @@ async def get_product(*, session: Session = Depends(get_session), id: int):
   return product
 
 
+@router.post("", response_model=ProductRead, include_in_schema=False)
 @router.post("/", response_model=ProductRead)
 async def create_product(*, session: Session = Depends(get_session), product: ProductCreate, request: Request):
   db_product = Product.from_orm(product)

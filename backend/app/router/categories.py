@@ -8,6 +8,7 @@ from app.models.database import engine
 router = APIRouter()
 
 
+@router.get("", response_model=list[Category], include_in_schema=False)
 @router.get("/", response_model=list[Category])
 async def get_categories(*, session: Session = Depends(get_session)):
   statement = select(Category).order_by(Category.id)
@@ -22,6 +23,7 @@ async def get_category(*, session: Session = Depends(get_session), id: int):
   return category
 
 
+@router.post("", response_model=Category, include_in_schema=False)
 @router.post("/", response_model=Category)
 async def create_category(*, session: Session = Depends(get_session), category: Category):
   session.add(category)

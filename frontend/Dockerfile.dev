@@ -1,0 +1,18 @@
+FROM node:18.10
+ENV NODE_ENV development
+
+# Set app directory
+WORKDIR /app
+
+# Install app dependencies
+COPY package.json package-lock.json ./
+RUN npm install -g @angular/cli
+RUN npm install
+
+COPY . .
+
+# No src files are added to container here.
+# Dockerfile.dev is to be used with volume mounting from host via docker-compose or:
+# docker run -v ./apps:/app/apps:ro -v ./libs:/app/libs:ro
+
+CMD ng serve --host 0.0.0.0 --port 4200 --disable-host-check

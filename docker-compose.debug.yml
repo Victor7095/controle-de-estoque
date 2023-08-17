@@ -1,0 +1,29 @@
+version: "3.4"
+
+services:
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - 80:80
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    environment:
+      - JWT_SECRET=clocked
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./frontend
+    volumes:
+      - /app/node_modules
+      - /app/src/styles
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+      - apiUrl=/devURL
