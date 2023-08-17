@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <p-dialog [(visible)]="showBuyDialog" [style]="{width: '450px'}" header="Comprar Produto" [modal]="true"
+        <p-dialog [(visible)]="showBuyDialog" [style]="getDialogStyles()" header="Comprar Produto" [modal]="true"
             class="p-fluid">
             <ng-template pTemplate="content">
                 <h5>{{selectedProduct.name}}</h5>

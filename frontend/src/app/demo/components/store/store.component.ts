@@ -21,7 +21,7 @@ export class StoreComponent {
 
     searchValue: string = '';
 
-    selectedProduct: Product;
+    selectedProduct?: Product;
     quantityToBuy: number = 1;
     observation: string = '';
 
@@ -103,5 +103,21 @@ export class StoreComponent {
         this.selectedProduct = null;
         this.quantityToBuy = 1;
         this.observation = '';
+    }
+
+    getDialogStyles() {
+        const baseStyle = {
+            width: '450px',
+            border: '2px solid green',
+            borderRadius: '5px',
+        };
+        if (!this.selectedProduct) return baseStyle;
+        const diff = this.selectedProduct.stockQuantity - this.quantityToBuy;
+        if (diff < 0) {
+            baseStyle.border = '2px solid red';
+        } else if (diff >= 0 && diff <= 5) {
+            baseStyle.border = '2px solid yellow';
+        }
+        return baseStyle;
     }
 }
