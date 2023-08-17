@@ -38,10 +38,37 @@
                         {{product.stockQuantity}} em estoque</div>
                     <div class="mx-2 font-medium text-500">{{product.price/usdToBrl | currency:'USD'}}</div>
                     <hr class="mt-3 mx-0 mb-0 border-top-1 border-none surface-border" />
-                    <button pButton pRipple label="Comprar" icon="pi pi-dollar"
+                    <button (click)="buyProduct(product)" pButton pRipple label="Comprar" icon="pi pi-dollar"
                         class="p-button-success mx-2 my-2"></button>
                 </div>
             </div>
         </div>
+
+        <p-dialog [(visible)]="showBuyDialog" [style]="{width: '450px'}" header="Comprar Produto" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <h5>{{selectedProduct.name}}</h5>
+                <h6>Total {{selectedProduct.price * quantityToBuy | currency:'BRL'}}</h6>
+                <div class="field">
+                    <label for="quantityToBuy">Quantidade</label>
+                    <p-inputNumber [(ngModel)]="quantityToBuy" id="quantityToBuy" [showButtons]="true" [min]="1"
+                        buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1"
+                        decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success"
+                        incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"></p-inputNumber>
+                </div>
+                <div class="field">
+                    <label for="observation">Observações</label>
+                    <input type="text" pInputText id="observation" [(ngModel)]="observation"
+                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !observation}" />
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                    (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text"
+                    [disabled]="quantityToBuy > selectedProduct.stockQuantity" (click)="confirmBuy()"></button>
+            </ng-template>
+        </p-dialog>
     </div>
 </div>

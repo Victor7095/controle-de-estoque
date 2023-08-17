@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
@@ -43,8 +43,20 @@ async def charts(session: Session = Depends(get_session)):
 
 @router.post("/buy-product", response_model=SaleRead)
 async def buy_product(*, session: Session = Depends(get_session), sale: SaleCreate, request: Request):
+  if sale.quantity <= 0:
+    raise HTTPException(
+        status_code=400, detail="Quantity must be greater than 0")
+
+  product = session.get(Product, db_sale.product_id)
+
+  if product.stock_quantity < db_sale.quantity:
+    raise HTTPException(status_code=400, detail="Not enough stock")
+
+  product.stock_quantity -= db_sale.quantity
+
   db_sale = Sale.from_orm(sale)
   db_sale.bought_by_id = request.state.user.id
+
   session.add(db_sale)
   session.commit()
   session.refresh(db_sale)

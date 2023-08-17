@@ -16,7 +16,7 @@
                 <ng-template pTemplate="body" let-sale>
                     <tr>
                         <td style="width: 15%; min-width: 7rem;">{{sale.createdOn | date: 'dd/MM/yyyy'}}</td>
-                        <td style="width: 15%; min-width: 7rem;">{{sale.createdOn | date: 'hh:mm'}}</td>
+                        <td style="width: 15%; min-width: 7rem;">{{sale.createdOn | date: 'HH:mm'}}</td>
                         <td style="width: 15%; min-width: 7rem;">{{sale.product.name}}</td>
                         <td style="width: 15%; min-width: 7rem;">{{sale.boughtBy.username}}</td>
                         <td style="width: 17%; min-width: 7rem;">{{sale.product.seller.username}}</td>

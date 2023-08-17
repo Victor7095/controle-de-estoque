@@ -25,7 +25,7 @@ def generate_session_token(user):
 
 @router.post("/token", response_model=LoginResponse)
 async def login_for_access_token(
-    user_data: LoginRequest
+    user_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
   user = authenticate_user(engine, user_data.username, user_data.password)
   if not user:

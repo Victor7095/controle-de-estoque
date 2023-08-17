@@ -131,7 +131,7 @@ export class CategoryComponent implements OnInit {
             }
 
             this.categories = [...this.categories];
-            this.categoryDialog = false;
+            this.hideDialog();
             this.category = { name: '' };
         }
     }

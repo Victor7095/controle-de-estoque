@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+import sqlalchemy as sa
+from sqlalchemy import func
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -20,8 +22,8 @@ class SaleBase(SQLModel):
 
 class Sale(SaleBase, table=True):
   id: Optional[int] = Field(default=None, primary_key=True)
-  created_on: datetime = Field(
-      default=datetime.utcnow, nullable=True, alias="createdOn")
+  created_on: datetime = Field(nullable=True, alias="createdOn", default=func.now(),
+                               sa_column=sa.Column(sa.DateTime(timezone=True)))
 
   product: "Product" = Relationship(back_populates="sales")
 

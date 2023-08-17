@@ -5,6 +5,8 @@ import { Product } from '../../api/product';
 import { CurrencyService } from '../../service/currency.service';
 import { Category } from '../../api/category';
 import { CategoryService } from '../../service/category.service';
+import { SalesService } from '../../service/sales.service';
+import { Sale } from '../../api/sales';
 
 @Component({
     templateUrl: './store.component.html',
@@ -17,11 +19,19 @@ export class StoreComponent {
     selectedCategoryId?: number;
     categories: Category[];
 
-    searchValue: string = "";
+    searchValue: string = '';
+
+    selectedProduct: Product;
+    quantityToBuy: number = 1;
+    observation: string = '';
+
+    showBuyDialog: boolean = false;
+    submitted: boolean = false;
 
     constructor(
         private productService: ProductService,
         private categoryService: CategoryService,
+        private salesService: SalesService,
         private currencyService: CurrencyService,
         private messageService: MessageService
     ) {}
@@ -53,7 +63,45 @@ export class StoreComponent {
             .getProductsInStore(categoryId, this.searchValue)
             .then((data) => {
                 this.products = data;
-            }
-        );
+            });
+    }
+
+    buyProduct(product: Product) {
+        this.selectedProduct = product;
+        this.showBuyDialog = true;
+    }
+
+    confirmBuy() {
+        this.submitted = true;
+        const data: Sale = {
+            productId: this.selectedProduct.id,
+            quantity: this.quantityToBuy,
+            observation: this.observation,
+        };
+        this.salesService
+            .buyProduct(data)
+            .then((data) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Product bought successfully',
+                });
+                this.hideDialog();
+            })
+            .catch((error) => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Error buying product',
+                });
+            });
+    }
+
+    hideDialog() {
+        this.showBuyDialog = false;
+        this.submitted = false;
+        this.selectedProduct = null;
+        this.quantityToBuy = 1;
+        this.observation = '';
     }
 }

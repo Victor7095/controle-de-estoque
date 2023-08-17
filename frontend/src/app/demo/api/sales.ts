@@ -10,7 +10,7 @@ export interface Sale {
     };
     observation: string;
     quantity: number;
-    createdAt?: Date;
+    createdOn?: Date;
 }
 
 export interface SalesCharts {

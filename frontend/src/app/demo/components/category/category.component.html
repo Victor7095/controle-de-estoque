@@ -75,8 +75,6 @@
         <p-dialog [(visible)]="categoryDialog" [style]="{width: '450px'}" header="Category Details" [modal]="true"
             class="p-fluid">
             <ng-template pTemplate="content">
-                <img [src]="'assets/demo/images/category/' + category.image" [alt]="category.image" width="150"
-                    class="mt-0 mx-auto mb-5 block shadow-2" *ngIf="category.image">
                 <div class="field">
                     <label for="name">Name</label>
                     <input type="text" pInputText id="name" [(ngModel)]="category.name" required autofocus

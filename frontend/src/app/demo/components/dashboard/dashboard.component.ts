@@ -24,12 +24,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private salesService: SalesService,
         public layoutService: LayoutService
     ) {
-        this.subscription = this.layoutService.configUpdate$.subscribe(() => {
-        });
+        this.subscription = this.layoutService.configUpdate$.subscribe(
+            () => {}
+        );
     }
 
     ngOnInit() {
         this.salesService.getCharts().then((chartsData) => {
+            chartsData.lastFourSales = chartsData.lastFourSales.map((sale) => {
+                sale.createdOn = new Date(sale.createdOn + 'Z');
+                return sale;
+            });
             this.chartsData = chartsData;
             this.lastFourSales = this.chartsData.lastFourSales;
             this.initChart();
@@ -53,7 +58,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 .reduce((a, b) => a + b, 0)
         );
 
-        
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue('--text-color');
 
