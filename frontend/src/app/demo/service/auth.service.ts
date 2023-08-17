@@ -29,8 +29,12 @@ export class AuthService {
     }
 
     async login(username: string, password: string) {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
         const response = await lastValueFrom(
-            this.http.post<any>('token', { username, password })
+            this.http.post<any>('token', formData)
         );
         this.setSession(response.access_token);
     }
